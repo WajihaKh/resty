@@ -1,36 +1,38 @@
-import React from 'react';
-
+import { useState } from 'react';
 import './Form.scss';
 
-class Form extends React.Component {
-    handleSubmit = e => {
+const Form = ({ handleApiCall }) => {
+    const [url, seturl] = useState('');
+    const [method, setMethod] = useState('GET');
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         const formData = {
-            method:'GET',
-            url: 'https://swapi.dev/api/people/1',
+            method,
+            url,
         };
-        this.props.handleApiCall(formData);
-    }
+        handleApiCall(formData);
+    };
+    
 
-    render() {
         return (
             <>
-            <form onSubmit={this.handlesubmit}>
+            <form onSubmit={handleSubmit}>
                 <label>
                     <span>URL: </span>
-                    <input name='url' type='text' />
+                    <input name='url' type='text' value={url} onChange={(e) => seturl(e.target.value)} />
                     <button type="submit">GO!</button>
                 </label>
                 <label className="methods">
-                    <span id="get">GET</span>
-                    <span id="post">POST</span>
-                    <span id="put">PUT</span>
-                    <span id="delete">DELETE</span>
+                    <span id="get" onClick={() => setMethod('GET')}>GET</span>
+                    <span id="post" onClick={() => setMethod('POST')}>POST</span>
+                    <span id="put" onClick={() => setMethod('PUT')}>PUT</span>
+                    <span id="delete" onClick={() => setMethod('DELETE')}>DELETE</span>
                 </label>
             </form>
             </>
         );
-    }
-}
+    };
+
 
 export default Form;
