@@ -1,8 +1,9 @@
-# React + Vite
+# RESTy
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Author**: Wajiha Khan
 
-Currently, two official plugins are available:
+**Version**: 1.0.0
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Overview**:
+
+Phase 1 lays the groundwork for the project by setting up the development environment, organizing the project structure, implementing core features, conducting basic testing, and creating initial documentation. It establishes the foundation for subsequent phases and ensures a structured approach to project development.

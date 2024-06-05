@@ -24,7 +24,7 @@ body {
     }
     
     header {
-        background: darkden($backgroundColor, 75);
+        background: darken($backgroundColor, 75);
         border-bottom: 1px solid #eee;
         color: #eee;
         padding: 0;
