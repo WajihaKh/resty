@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-
 import './App.scss';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
@@ -14,16 +12,30 @@ const App = () => {
   const [loading, setLoading] = useState(false);
 
   const callApi = async (params) => {
-    setLoading(true)
+    setLoading(true);
     setRequestParams(params);
+    console.log('API call parameters: ', params);
+
     try {
-      const response = await axios ({
+      let url = params.url;
+      let options = {
         method: params.method,
-        url: params.url,
-        data: params.body,
-      });
-      setData(response.data);
-      setHeaders(response.headers);
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      };
+
+      if (params.method !== 'GET' && params.body) {
+        options.body = JSON.stringify(params.body);
+        // Redirect non-GET methods to JSONPlaceholder for testing
+        url = 'https://jsonplaceholder.typicode.com/posts';
+      }
+
+      const response = await fetch(url, options);
+      console.log('API response: ', response);
+      const data = await response.json();
+      setData(data);
+      setHeaders(Object.fromEntries(response.headers.entries()));
     } catch (error) {
       console.error('Error calling API:', error);
       setData({ error: 'Failed to fetch data' });
