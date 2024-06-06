@@ -17,19 +17,14 @@ const App = () => {
       console.log('API call parameters: ', requestParams);
 
       try {
-        let url = requestParams.url;
-        let options = {
-          method: requestParams.method,
+        const { url, method, body } = requestParams;
+        const options = {
+          method,
           headers: {
             'Content-Type': 'application/json'
           },
+          body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
         };
-
-        if (requestParams.method !== 'GET' && requestParams.body) {
-          options.body = JSON.stringify(requestParams.body);
-          // Redirect non-GET methods to JSONPlaceholder for testing
-          url = 'https://jsonplaceholder.typicode.com/posts';
-        }
 
         const response = await fetch(url, options);
         console.log('API response: ', response);
