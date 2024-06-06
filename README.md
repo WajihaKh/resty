@@ -2,6 +2,8 @@
 
 **Author**: Wajiha Khan
 
+**API**: https://auth-api-zxfi.onrender.com/api/v1/clothes
+
 **Version**: 1.0.0
 
 **Overview**:
