@@ -1,26 +1,69 @@
 $backgroundColor: #f5f5f5;
-$radius: 40%;
+$radius: 5px;
+$headerColor: #3C6D9E;
 
 form {
-    display: inline-block;
+    display: flex;
+    flex-direction: column;
     margin: auto;
-    width: 200px;
+    width: 100%;
+    max-width: 600px;
+    padding: 1rem;
+    background: white;
+    border-radius: $radius;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 
     label {
+        margin: 1rem 0;
         display: flex;
+        flex-direction: column;
+
+        span {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: $radius;
+        }
+    }
+
+    .methods {
+        display: flex;
+        justify-content: space-around;
         margin: 1rem 0;
 
-        &.methods {
-            span {
-                cursor: pointer;
-                margin-right: 1rem;
-                padding: .25rem .5rem;
-                background: #ccc;
+        span {
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: $radius;
+            background: #ccc;
+            user-select: none;
 
-                &:hover, &.active {
-                    background: #fff;
-                }
+            &.active, &:hover {
+                background: $headerColor;
+                color: white;
+                border-color: $headerColor;
             }
+        }
+    }
+
+    button {
+        padding: 0.75rem;
+        border: none;
+        border-radius: $radius;
+        background-color: $headerColor;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        align-self: flex-start;
+
+        &:hover {
+            background-color: darken($headerColor, 10%);
         }
     }
 }

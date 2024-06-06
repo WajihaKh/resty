@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.scss';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
@@ -8,48 +8,55 @@ import Results from './Components/Results';
 const App = () => {
   const [data, setData] = useState(null);
   const [headers, setHeaders] = useState(null);
-  const [requestParams, setRequestParams] = useState({});
   const [loading, setLoading] = useState(false);
+  const [requestParams, setRequestParams] = useState({});
 
-  const callApi = async (params) => {
-    setLoading(true);
-    setRequestParams(params);
-    console.log('API call parameters: ', params);
+  useEffect(() => {
+    const callApi = async () => {
+      setLoading(true);
+      console.log('API call parameters: ', requestParams);
 
-    try {
-      let url = params.url;
-      let options = {
-        method: params.method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-      };
+      try {
+        let url = requestParams.url;
+        let options = {
+          method: requestParams.method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+        };
 
-      if (params.method !== 'GET' && params.body) {
-        options.body = JSON.stringify(params.body);
-        // Redirect non-GET methods to JSONPlaceholder for testing
-        url = 'https://jsonplaceholder.typicode.com/posts';
+        if (requestParams.method !== 'GET' && requestParams.body) {
+          options.body = JSON.stringify(requestParams.body);
+          // Redirect non-GET methods to JSONPlaceholder for testing
+          url = 'https://jsonplaceholder.typicode.com/posts';
+        }
+
+        const response = await fetch(url, options);
+        console.log('API response: ', response);
+        const responseData = await response.json();
+        setData(responseData);
+        setHeaders(Object.fromEntries(response.headers.entries()));
+      } catch (error) {
+        console.error('Error calling API:', error);
+        setData({ error: 'Failed to fetch data' });
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const response = await fetch(url, options);
-      console.log('API response: ', response);
-      const data = await response.json();
-      setData(data);
-      setHeaders(Object.fromEntries(response.headers.entries()));
-    } catch (error) {
-      console.error('Error calling API:', error);
-      setData({ error: 'Failed to fetch data' });
-    } finally {
-      setLoading(false);
+    if (Object.keys(requestParams).length !== 0) {
+      callApi();
     }
+  }, [requestParams]);
+
+  const handleApiCall = (params) => {
+    setRequestParams(params);
   };
 
   return (
     <React.Fragment>
       <Header />
-      <div>Request Method: {requestParams.method}</div>
-      <div>URL: {requestParams.url}</div>
-      <Form handleApiCall={callApi} />
+      <Form handleApiCall={handleApiCall} />
       <Results data={data} headers={headers} loading={loading} />
       <Footer />
     </React.Fragment>
