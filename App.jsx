@@ -1,58 +1,96 @@
-import React, { useState, useEffect } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import './App.scss';
 import Header from './Components/Header';
 import Footer from './Components/Footer';
 import Form from './Components/Form';
 import Results from './Components/Results';
+import History from './Components/History';
+
+const initialState = {
+  data: null,
+  headers: null,
+  loading: false,
+  requestParams: {},
+  history: [],
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: true };
+    case 'SET_DATA':
+      return { ...state, data: action.payload.data, headers: action.payload.headers, loading: false };
+    case 'SET_REQUEST_PARAMS':
+      return { ...state, requestParams: action.payload };
+    case 'ADD_HISTORY':
+      return { ...state, history: [...state.history, action.payload] };
+    case 'SET_ERROR':
+      return { ...state, data: { error: 'Failed to fetch data' }, loading: false };
+    default:
+      return state;
+  }
+};
 
 const App = () => {
-  const [data, setData] = useState(null);
-  const [headers, setHeaders] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [requestParams, setRequestParams] = useState({});
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
     const callApi = async () => {
-      setLoading(true);
-      console.log('API call parameters: ', requestParams);
+      dispatch({ type: 'SET_LOADING' });
 
       try {
-        const { url, method, body } = requestParams;
+        const { url, method, body } = state.requestParams;
         const options = {
           method,
           headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
           body: method !== 'GET' && body ? JSON.stringify(body) : undefined,
         };
 
         const response = await fetch(url, options);
-        console.log('API response: ', response);
         const responseData = await response.json();
-        setData(responseData);
-        setHeaders(Object.fromEntries(response.headers.entries()));
+        // console.log(Object.fromEntries(response.headers.entries()) );
+
+        dispatch({
+          type: 'SET_DATA',
+          payload: { data: responseData, headers: Object.fromEntries(response.headers.entries()) },
+        });
+
+        dispatch({
+          type: 'ADD_HISTORY',
+          payload: { method, url, results: responseData, headers: Object.fromEntries(response.headers.entries())},
+        });
       } catch (error) {
-        console.error('Error calling API:', error);
-        setData({ error: 'Failed to fetch data' });
-      } finally {
-        setLoading(false);
+        dispatch({ type: 'SET_ERROR' });
       }
     };
 
-    if (Object.keys(requestParams).length !== 0) {
+    if (Object.keys(state.requestParams).length !== 0) {
       callApi();
     }
-  }, [requestParams]);
+  }, [state.requestParams]);
 
   const handleApiCall = (params) => {
-    setRequestParams(params);
+    dispatch({ type: 'SET_REQUEST_PARAMS', payload: params });
+  };
+
+  const handleHistoryClick = (historyItem) => {
+    console.log(historyItem);
+    dispatch({
+      type: 'SET_DATA',
+      payload: { 
+        data: historyItem.results, 
+        headers: historyItem.headers },
+    });
   };
 
   return (
     <React.Fragment>
       <Header />
       <Form handleApiCall={handleApiCall} />
-      <Results data={data} headers={headers} loading={loading} />
+      <Results data={state.data} headers={state.headers} loading={state.loading} />
+      <History history={state.history} onHistoryClick={handleHistoryClick} />
       <Footer />
     </React.Fragment>
   );
